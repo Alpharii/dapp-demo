@@ -18,11 +18,18 @@ const initialize = async () => {
   }
 };
 
+
 // Initialize once when the module is loaded
-initialize();
+const ensureInitialized = async () => {
+    if (!provider || !signer || !contract) {
+      await initialize();
+    }
+};
 
 // Function to request single account
 export const requestAccount = async () => {
+    await ensureInitialized(); // pastikan init
+
   try {
     const accounts = await provider.send("eth_requestAccounts", []);
     return accounts[0]; // Return the first account
@@ -33,21 +40,25 @@ export const requestAccount = async () => {
 };
 // Function to get contract balance in ETH
 export const getContractBalanceInETH = async () => {
+    await ensureInitialized(); // pastikan init
+
   const balanceWei = await provider.getBalance(CONTRACT_ADDRESS);
   const balanceEth = formatEther(balanceWei); // Convert Wei to ETH string
   return balanceEth; // Convert ETH string to number
 };
 
-// Function to deposit funds to the contract
 export const depositFund = async (depositValue) => {
-  const ethValue = parseEther(depositValue);
-  const deposit = await contract.deposit({ value: ethValue });
-  await deposit.wait();
-};
+    await ensureInitialized(); // pastikan init
 
-// Function to withdraw funds from the contract
-export const withdrawFund = async () => {
-  const withdrawTx = await contract.withdraw();
-  await withdrawTx.wait();
-  console.log("Withdrawal successful!");
-};
+    const ethValue = parseEther(depositValue);
+    const deposit = await contract.deposit({ value: ethValue });
+    await deposit.wait();
+  };
+  
+  export const withdrawFund = async () => {
+    await ensureInitialized(); // pastikan init
+    const withdrawTx = await contract.withdraw();
+    await withdrawTx.wait();
+    console.log("Withdrawal successful!");
+  };
+  

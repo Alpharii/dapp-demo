@@ -5,6 +5,7 @@ import ContractActions from "./components/ContractActions";
 import { requestAccount } from "./utils/contractServices";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import './App.css';
 
 function App() {
   const [account, setAccount] = useState(null);
